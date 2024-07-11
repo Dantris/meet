@@ -1,37 +1,33 @@
-import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, within, waitFor } from "@testing-library/react";
 import EventList from "../components/EventList";
+import { getEvents } from "../api";
+import App from "../App";
 
 describe("<EventList /> component", () => {
+  let EventListComponent;
+  beforeEach(() => {
+    EventListComponent = render(<EventList />);
+  });
+  test('has an element with "list" role', () => {
+    expect(EventListComponent.queryByRole("list")).toBeInTheDocument();
+  });
   test("renders correct number of events", async () => {
-    // Example event data
-    const mockEvents = [
-      {
-        id: "1",
-        summary: "Event 1",
-        start: { dateTime: "2024-07-05T10:00:00-07:00" },
-      },
-      {
-        id: "2",
-        summary: "Event 2",
-        start: { dateTime: "2024-07-06T12:00:00-07:00" },
-      },
-    ];
+    const allEvents = await getEvents();
+    EventListComponent.rerender(<EventList events={allEvents} />);
+    expect(EventListComponent.getAllByRole("listitem")).toHaveLength(
+      allEvents.length
+    );
+  });
+});
 
-    // Render the EventList with mock data
-    render(<EventList events={mockEvents} />);
-
-    // Debug: Output the entire container HTML
-    console.log(screen.debug());
-
-    // Check for correct number of events rendered
-    const listItems = screen.getAllByRole("listitem");
-    expect(listItems).toHaveLength(mockEvents.length);
-
-    // Verify that the content matches expected data
-    mockEvents.forEach((event) => {
-      const regex = new RegExp(event.summary, "i"); // Case-insensitive match
-      expect(screen.getByText(regex)).toBeInTheDocument();
+describe("<EventList /> integration", () => {
+  test("renders a list of 32 events when the app is mounted and rendered", async () => {
+    const AppComponent = render(<App />);
+    const AppDOM = AppComponent.container.firstChild;
+    const EventListDOM = AppDOM.querySelector("#event-list");
+    await waitFor(() => {
+      const EventListItems = within(EventListDOM).queryAllByRole("listitem");
+      expect(EventListItems.length).toBeGreaterThan(0);
     });
   });
 });

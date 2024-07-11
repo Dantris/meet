@@ -1,53 +1,28 @@
-import React, { useState, useCallback } from "react";
-
-const formatDate = (dateString) => {
-  try {
-    const options = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    };
-    return new Date(dateString).toLocaleString(undefined, options);
-  } catch (error) {
-    console.error("Failed to format date:", error);
-    return "Invalid date";
-  }
-};
+import { useState } from "react";
 
 const Event = ({ event }) => {
   const [showDetails, setShowDetails] = useState(false);
-
-  const toggleDetails = useCallback(() => {
-    setShowDetails((prev) => !prev);
-  }, []);
-
   return (
-    <div className="event">
-      <h1>{event.summary || "No Title"}</h1>
-      <p>{event.location || "Location not specified"}</p>
-      <p>
-        {event.start?.dateTime
-          ? formatDate(event.start.dateTime)
-          : "Date not set"}
-      </p>
-      {showDetails && (
-        <div className="event-details">
-          <p>{event.description}</p>
-          {event.attendees && (
-            <ul>
-              {event.attendees.map((attendee, index) => (
-                <li key={index}>{attendee.email}</li>
-              ))}
-            </ul>
-          )}
-          <button onClick={toggleDetails}>Hide Details</button>
+    <li className="event">
+      <h3>{event.summary}</h3>
+      <p>{event.created}</p>
+      <p>{event.location}</p>
+      <button
+        className="details-btn"
+        onClick={() => {
+          setShowDetails(!showDetails);
+        }}
+      >
+        {showDetails ? "Hide Details" : "Show Details"}
+      </button>
+      {showDetails ? (
+        <div className="details">
+          <h4>Event Details</h4>
+          <p>Description: {event.description}</p>
+          <p>Event status: {event.status}</p>
         </div>
-      )}
-      {!showDetails && <button onClick={toggleDetails}>Show Details</button>}
-    </div>
+      ) : null}
+    </li>
   );
 };
 

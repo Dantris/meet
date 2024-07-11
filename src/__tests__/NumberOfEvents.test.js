@@ -1,30 +1,25 @@
-import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
 import NumberOfEvents from "../components/NumberOfEvents";
-
+import { render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 describe("<NumberOfEvents /> component", () => {
-  test("renders number input element", () => {
-    render(<NumberOfEvents numberOfEvents={32} setNumberOfEvents={() => {}} />);
-    const inputElement = screen.getByRole("spinbutton");
-    expect(inputElement).toBeInTheDocument();
-  });
-
-  test("default value of number input is 32", () => {
-    render(<NumberOfEvents numberOfEvents={32} setNumberOfEvents={() => {}} />);
-    const inputElement = screen.getByRole("spinbutton");
-    expect(inputElement.value).toBe("32");
-  });
-
-  test("changes value when user types in the input", async () => {
-    const setNumberOfEvents = jest.fn();
-    render(
-      <NumberOfEvents
-        numberOfEvents={32}
-        setNumberOfEvents={setNumberOfEvents}
-      />
+  let NumberOfEventsComponent;
+  beforeEach(() => {
+    NumberOfEventsComponent = render(
+      <NumberOfEvents setCurrentNOE={() => {}} setErrorAlert={() => {}} />
     );
-    const inputElement = screen.getByRole("spinbutton");
-    fireEvent.change(inputElement, { target: { value: "10" } });
-    expect(setNumberOfEvents).toHaveBeenCalledWith("10");
+  });
+  test("has an element with role of a textbox", () => {
+    const numberTextbox = NumberOfEventsComponent.queryByRole("textbox");
+    expect(numberTextbox).toBeInTheDocument();
+    expect(numberTextbox).toHaveClass("textboxNumber");
+  });
+  test("by default, number of event is listed 32", () => {
+    expect(NumberOfEventsComponent.queryByRole("textbox")).toHaveValue("32");
+  });
+
+  test("updates number of events when user types", async () => {
+    const numberTextbox = NumberOfEventsComponent.queryByRole("textbox");
+    await userEvent.type(numberTextbox, "{backspace}{backspace}10");
+    expect(numberTextbox.value).toBe("10");
   });
 });
