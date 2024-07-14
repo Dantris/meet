@@ -22,8 +22,8 @@ export const getEvents = async () => {
   if (token) {
     removeQuery();
     const url =
-      "https://a8a7uyfk80.execute-api.eu-central-1.amazonaws.com/dev/api/get-events" +
-      "/" +
+      "https://de3rxsg0le.execute-api.eu-central-1.amazonaws.com/dev/api/calendar-events" +
+      "?access_token=" +
       token;
     const response = await fetch(url);
     const result = await response.json();
@@ -59,7 +59,7 @@ export const getAccessToken = async () => {
     const code = await searchParams.get("code");
     if (!code) {
       const response = await fetch(
-        "https://a8a7uyfk80.execute-api.eu-central-1.amazonaws.com/dev/api/get-auth-url"
+        "https://de3rxsg0le.execute-api.eu-central-1.amazonaws.com/dev/api/get-auth-url"
       );
       const result = await response.json();
       const { authUrl } = result;
@@ -81,7 +81,7 @@ const checkToken = async (accessToken) => {
 const getToken = async (code) => {
   const encodeCode = encodeURIComponent(code);
   const response = await fetch(
-    "https://a8a7uyfk80.execute-api.eu-central-1.amazonaws.com/dev/api/token" +
+    "https://de3rxsg0le.execute-api.eu-central-1.amazonaws.com/dev/api/token" +
       "/" +
       encodeCode
   );
