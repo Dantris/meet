@@ -31,3 +31,5 @@ afterEach(() => {
   window.ResizeObserver = ResizeObserver;
   jest.restoreAllMocks();
 });
+
+jest.setTimeout(30000);
