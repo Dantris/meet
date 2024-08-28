@@ -1,13 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { ResponsiveContainer, PieChart, Pie } from "recharts";
 
 const EventGenresChart = ({ events }) => {
+  const genres = useMemo(
+    () => ["React", "JavaScript", "Node", "jQuery", "Angular"],
+    []
+  );
+
   const [data, setData] = useState([]);
-  const genres = ["React", "JavaScript", "Node", "jQuery", "Angular"];
+
+  const getData = useCallback(() => {
+    return genres.map((genre) => {
+      const filteredEvents = events.filter((event) =>
+        event.summary.includes(genre)
+      ).length;
+      return { name: genre, value: filteredEvents };
+    });
+  }, [genres, events]);
 
   useEffect(() => {
     setData(getData());
-  }, [events]);
+  }, [getData]);
 
   const renderCustomizedLabel = ({
     cx,
@@ -32,17 +45,6 @@ const EventGenresChart = ({ events }) => {
         {`${genres[index]} ${(percent * 100).toFixed(0)}%`}
       </text>
     ) : null;
-  };
-
-  const getData = () => {
-    const data = genres.map((genre) => {
-      const filteredEvents = events.filter((event) =>
-        event.summary.includes(genre)
-      ).length;
-      return { name: genre, value: filteredEvents };
-    });
-
-    return data;
   };
 
   return (

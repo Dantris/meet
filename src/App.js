@@ -2,13 +2,13 @@ import CitySearch from "./components/CitySearch";
 import EventList from "./components/EventList";
 import NumberOfEvents from "./components/NumberOfEvents";
 import "./App.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getEvents, extractLocations } from "./api";
 import { InfoAlert } from "./components/Alert";
 import { ErrorAlert } from "./components/Alert";
 import { WarningAlert } from "./components/Alert";
-//import CityEventsChart from "./components/CityEventsCharts";
-//import EventGenresChart from "./components/EventsGenresChart";
+import CityEventsChart from "./components/CityEventsCharts";
+import EventGenresChart from "./components/EventsGenresChart";
 
 const App = () => {
   const [events, setEvents] = useState([]);
@@ -19,6 +19,16 @@ const App = () => {
   const [errorAlert, setErrorAlert] = useState("");
   const [warningAlert, setWarningAlert] = useState("");
 
+  const fetchData = useCallback(async () => {
+    const allEvents = await getEvents();
+    const filteredEvents =
+      currentCity === "See all Cities"
+        ? allEvents
+        : allEvents.filter((event) => event.location === currentCity);
+    setEvents(filteredEvents.slice(0, currentNOE));
+    setAllLocations(extractLocations(allEvents));
+  }, [currentCity, currentNOE]);
+
   useEffect(() => {
     if (navigator.onLine) {
       setWarningAlert("");
@@ -28,17 +38,7 @@ const App = () => {
       );
     }
     fetchData();
-  }, [currentCity, currentNOE]);
-
-  const fetchData = async () => {
-    const allEvents = await getEvents();
-    const filteredEvents =
-      currentCity === "See all Cities"
-        ? allEvents
-        : allEvents.filter((event) => event.location === currentCity);
-    setEvents(filteredEvents.slice(0, currentNOE));
-    setAllLocations(extractLocations(allEvents));
-  };
+  }, [currentCity, currentNOE, fetchData]);
 
   return (
     <div className="App">
@@ -57,12 +57,13 @@ const App = () => {
         setCurrentNOE={setCurrentNOE}
         setErrorAlert={setErrorAlert}
       />
-      {/* <div className="charts-container">
+      <div className="charts-container">
         <EventGenresChart events={events} />
         <CityEventsChart allLocations={allLocations} events={events} />
-      </div> */}
+      </div>
       <EventList events={events} />
     </div>
   );
 };
+
 export default App;

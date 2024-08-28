@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   ScatterChart,
   Scatter,
@@ -12,11 +12,7 @@ import {
 const CityEventsChart = ({ allLocations, events }) => {
   const [data, setData] = useState([]);
 
-  useEffect(() => {
-    setData(getData());
-  }, [events]);
-
-  const getData = () => {
+  const getData = useCallback(() => {
     const data = allLocations.map((location) => {
       const count = events.filter(
         (event) => event.location === location
@@ -25,7 +21,11 @@ const CityEventsChart = ({ allLocations, events }) => {
       return { city, count };
     });
     return data;
-  };
+  }, [allLocations, events]);
+
+  useEffect(() => {
+    setData(getData());
+  }, [getData]);
 
   return (
     <ResponsiveContainer width="99%" height={400}>
@@ -53,7 +53,7 @@ const CityEventsChart = ({ allLocations, events }) => {
           allowDecimals={false}
         />
         <Tooltip cursor={{ strokeDasharray: "3 3" }} />
-        <Scatter name="A school" data={data} fill="#e07a5f" />
+        <Scatter name="Events" data={data} fill="#e07a5f" />
       </ScatterChart>
     </ResponsiveContainer>
   );
