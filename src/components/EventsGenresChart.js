@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 
 const EventGenresChart = ({ events }) => {
   const genres = useMemo(
@@ -9,7 +9,7 @@ const EventGenresChart = ({ events }) => {
   const [data, setData] = useState([]);
 
   // Define a color for each genre
-  const colors = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#8dd1e1"];
+  const colors = ["#DD0000", "#00DD00", "#0000DD", "#DDDD00", "#DD00DD"];
 
   const getData = useCallback(() => {
     return genres.map((genre) => {
@@ -63,6 +63,7 @@ const EventGenresChart = ({ events }) => {
             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
           ))}
         </Pie>
+        <Legend verticalAlign="bottom" align="center" />
       </PieChart>
     </ResponsiveContainer>
   );
